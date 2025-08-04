@@ -1,0 +1,435 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "operationId": "AuthController_signup",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "User signup payload",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthDto"
+              },
+              "examples": {
+                "default": {
+                  "summary": "Signup Example",
+                  "value": {
+                    "email": "user@example.com",
+                    "password": "StrongPassword123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created"
+          },
+          "409": {
+            "description": "Email already exists"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "User login payload",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthDto"
+              },
+              "examples": {
+                "default": {
+                  "summary": "Login Example",
+                  "value": {
+                    "email": "user@example.com",
+                    "password": "StrongPassword123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns JWT access token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/products": {
+      "get": {
+        "operationId": "ProductController_getProducts",
+        "parameters": [
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "description": "Maximum price",
+            "schema": {
+              "example": 1000
+            }
+          },
+          {
+            "name": "minPrice",
+            "required": false,
+            "in": "query",
+            "description": "Minimum price",
+            "schema": {
+              "example": 100
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Filter by category",
+            "schema": {
+              "example": "Camera"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "Search by product name",
+            "schema": {
+              "example": "Canon"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 5)",
+            "schema": {
+              "example": 5
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a paginated list of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Products"
+        ]
+      }
+    },
+    "/products/{id}": {
+      "delete": {
+        "operationId": "ProductController_deleteProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized (JWT missing or invalid)"
+          },
+          "403": {
+            "description": "Forbidden (insufficient permissions)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Products"
+        ]
+      }
+    },
+    "/reports/deleted-percentage": {
+      "get": {
+        "operationId": "ReportsController_getDeletedPercentage",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Percentage of deleted products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "percentage": 25,
+                    "deleted": 10,
+                    "total": 40
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (JWT missing or invalid)"
+          },
+          "403": {
+            "description": "Forbidden (insufficient permissions)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/reports/non-deleted-percentage": {
+      "get": {
+        "operationId": "ReportsController_getNonDeletedPercentage",
+        "parameters": [
+          {
+            "name": "withPrice",
+            "required": false,
+            "in": "query",
+            "description": "true | false",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Start date (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "description": "End date (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Percentage of non-deleted products with filters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "percentage": 80,
+                    "filtered": 32,
+                    "total": 40
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (JWT missing or invalid)"
+          },
+          "403": {
+            "description": "Forbidden (insufficient permissions)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    },
+    "/reports/avg-stock-by-category": {
+      "get": {
+        "operationId": "ReportsController_getAvgStockByCategory",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Average stock grouped by category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "category": {
+                        "type": "string"
+                      },
+                      "avgStock": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "example": [
+                    {
+                      "category": "Camera",
+                      "avgStock": "12.5"
+                    },
+                    {
+                      "category": "Laptop",
+                      "avgStock": "8.2"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (JWT missing or invalid)"
+          },
+          "403": {
+            "description": "Forbidden (insufficient permissions)"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Reports"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Product API",
+    "description": "Contentful Product Sync API",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "AuthDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "admin@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "ProductDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "brand": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "stock": {
+            "type": "number"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sku",
+          "name",
+          "brand",
+          "model",
+          "category",
+          "color",
+          "price",
+          "currency",
+          "stock",
+          "locale",
+          "createdAt",
+          "updatedAt"
+        ]
+      }
+    }
+  }
+}
